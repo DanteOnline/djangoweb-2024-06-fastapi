@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:80"
+    develop:
+      watch:
+        - action: rebuild
+          path: .
