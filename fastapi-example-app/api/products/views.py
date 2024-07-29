@@ -20,15 +20,9 @@ class ProductDB:
     price: int
 
 
-@router.get("/")
+@router.get("/", response_model=list[ProductRead])
 def get_products():
-    return {
-        "data": [
-            {"id": 1, "name": "Foo"},
-            {"id": 2, "name": "Bar"},
-            {"id": 3, "name": "Spam"},
-        ],
-    }
+    return []
 
 
 @router.get("/{product_id}/", response_model=ProductRead)
@@ -51,12 +45,8 @@ def get_product_by_id(product_id: int):
     }
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProductRead)
 def create_product(product_in: ProductCreate):
-    return {
-        "data": {
-            "id": 0,
-            "name": product_in.name,
-            "price": product_in.price,
-        }
-    }
+    data = product_in.model_dump()
+    data['id'] = 1
+    return ProductRead(**data)
