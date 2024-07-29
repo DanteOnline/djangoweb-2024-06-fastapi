@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Annotated
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import status
-from fastapi import Body
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.models import db_helper
 from .schemas import ProductCreate, ProductRead
+from .crud import product_list, new_product
 
 router = APIRouter(
     prefix="/products",
@@ -21,22 +21,13 @@ class ProductDB:
 
 
 @router.get("/", response_model=list[ProductRead])
-def get_products():
-    return []
+async def get_products():
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+    return await product_list(session)
 
 
 @router.get("/{product_id}/", response_model=ProductRead)
 def get_product_by_id(product_id: int):
-    # return ProductRead(
-    #     id=product_id,
-    #     name="Foo",
-    #     price=1233,
-    # )
-    # return ProductDB(
-    #     id=product_id,
-    #     name=f"abc-{product_id}",
-    #     price=product_id % 10 * 100,
-    # )
     return {
         "id": product_id,
         "name": f"abc-{product_id}",
@@ -46,7 +37,9 @@ def get_product_by_id(product_id: int):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProductRead)
-def create_product(product_in: ProductCreate):
+async def create_product(product_in: ProductCreate):
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+    await new_product(session, product_in)
     data = product_in.model_dump()
     data['id'] = 1
     return ProductRead(**data)

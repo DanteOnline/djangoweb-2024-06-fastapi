@@ -4,6 +4,9 @@ from typing import Annotated
 
 from pydantic import EmailStr
 
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 from fastapi import Query
 from fastapi import Body
 from starlette.responses import FileResponse
@@ -11,8 +14,16 @@ from starlette.responses import StreamingResponse
 
 from create_fastapi_app import create_app
 from api import router as api_router
+from core.models import Base, db_helper
 
-app = create_app(create_custom_static_urls=True)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    # shutdown
+
+app = create_app(create_custom_static_urls=True, lifespan=lifespan)
 app.include_router(api_router)
 
 
