@@ -21,8 +21,9 @@ class ProductDB:
 
 
 @router.get("/", response_model=list[ProductRead])
-async def get_products():
+async def get_products(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+):
     return await product_list(session)
 
 
@@ -37,8 +38,10 @@ def get_product_by_id(product_id: int):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProductRead)
-async def create_product(product_in: ProductCreate):
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+async def create_product(
+        product_in: ProductCreate,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+):
     await new_product(session, product_in)
     data = product_in.model_dump()
     data['id'] = 1
