@@ -42,7 +42,5 @@ async def create_product(
         product_in: ProductCreate,
         session: AsyncSession = Depends(db_helper.scoped_session_dependency)
 ):
-    await new_product(session, product_in)
-    data = product_in.model_dump()
-    data['id'] = 1
-    return ProductRead(**data)
+    product = await new_product(session, product_in)
+    return product
