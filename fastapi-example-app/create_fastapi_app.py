@@ -10,11 +10,11 @@ from fastapi.openapi.docs import (
 
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # startup
-    yield
-    # shutdown
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # startup
+#     yield
+#     # shutdown
 
 
 def register_static_docs_routes(app: FastAPI):
@@ -43,6 +43,7 @@ def register_static_docs_routes(app: FastAPI):
 
 def create_app(
     create_custom_static_urls: bool = False,
+    lifespan=None,
 ) -> FastAPI:
     app = FastAPI(
         # default_response_class=ORJSONResponse,
