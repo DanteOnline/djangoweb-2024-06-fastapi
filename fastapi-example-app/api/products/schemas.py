@@ -22,5 +22,10 @@ class ProductRead(ProductBase):
     price: int = Field(json_schema_extra={"example": 100})
 
 
-# class ProductReadResponse(BaseModel):
-#     data: ProductRead
+class ProductUpdate(ProductCreate):
+    pass
+
+
+class ProductUpdatePartial(ProductCreate):
+    name: str | None = None
+    price: int | None = None
